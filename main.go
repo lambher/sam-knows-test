@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/lambher/sam-knows-test/models"
@@ -14,5 +15,10 @@ func main() {
 		log.Fatal(err)
 	}
 
-	data.Process()
+	err = data.Process()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println(data)
 }
