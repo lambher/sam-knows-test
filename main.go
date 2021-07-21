@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	path := "inputs/1.json"
+	path := "inputs/2.json"
 
 	data, err := models.LoadDataFromFile(path)
 	if err != nil {

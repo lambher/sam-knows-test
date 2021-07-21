@@ -15,6 +15,13 @@ type Data struct {
 	Min     float64
 	Max     float64
 	Median  float64
+
+	UnderPerformingPeriods []Period
+}
+
+type Period struct {
+	Start DTime
+	End   DTime
 }
 
 type Metric struct {
@@ -58,7 +65,32 @@ func (d *Data) Process() error {
 	d.Average /= float64(len(d.Metrics))
 	d.Median = findMedian(values)
 
+	d.findUnderPerformingPeriods()
 	return nil
+}
+
+func (d *Data) findUnderPerformingPeriods() {
+	gap := 5. * 125000
+
+	if d.Min > d.Median-gap {
+		return
+	}
+
+	underPerforming := false
+	for _, metric := range d.Metrics {
+		if metric.Value < d.Median-gap {
+			if !underPerforming {
+				d.UnderPerformingPeriods = append(d.UnderPerformingPeriods, Period{
+					Start: metric.Date,
+				})
+			}
+			d.UnderPerformingPeriods[len(d.UnderPerformingPeriods)-1].End = metric.Date
+			underPerforming = true
+		} else {
+			underPerforming = false
+		}
+
+	}
 }
 
 func findMedian(values []float64) float64 {
@@ -78,7 +110,7 @@ func (d *Data) String() string {
 			"No metrics processed"
 	}
 
-	return fmt.Sprintf(""+
+	str := fmt.Sprintf(""+
 		"SamKnows Metric Analyser v1.0.0\n"+
 		"===============================\n"+
 		"\n"+
@@ -101,6 +133,19 @@ func (d *Data) String() string {
 		bytesToMbits(d.Min),
 		bytesToMbits(d.Max),
 		bytesToMbits(d.Median))
+
+	if len(d.UnderPerformingPeriods) > 0 {
+		str += fmt.Sprintf("\n" +
+			"Under-performing periods:\n")
+	}
+
+	for _, underPerformingPeriod := range d.UnderPerformingPeriods {
+		str += fmt.Sprintf("\n"+
+			"\t* The period between %s and %s\n"+
+			"\t  was under-performing.\n", underPerformingPeriod.Start, underPerformingPeriod.End)
+	}
+
+	return str
 }
 
 //1 Mbit = 125000 bytes
