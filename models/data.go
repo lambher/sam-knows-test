@@ -29,6 +29,7 @@ type Metric struct {
 	Date  DTime   `json:"dtime"`
 }
 
+// Loads the input file with the given path
 func LoadDataFromFile(path string) (*Data, error) {
 	var data Data
 
@@ -41,6 +42,8 @@ func LoadDataFromFile(path string) (*Data, error) {
 	return &data, err
 }
 
+// Processes the metrics and calculates Average, Min, Max and Median values
+// and analyses the under-performing periods
 func (d *Data) Process() error {
 	if len(d.Metrics) == 0 {
 		return errors.New("no metrics to process")
@@ -69,6 +72,7 @@ func (d *Data) Process() error {
 	return nil
 }
 
+// Analyses the under-performing periods
 func (d *Data) findUnderPerformingPeriods() {
 	gap := 5. * 125000
 
@@ -93,6 +97,7 @@ func (d *Data) findUnderPerformingPeriods() {
 	}
 }
 
+// If the number of value is even it will return the average of the two middle values
 func findMedian(values []float64) float64 {
 	if len(values) == 0 {
 		return 0
@@ -105,6 +110,7 @@ func findMedian(values []float64) float64 {
 	return (values[len(values)/2] + values[len(values)/2-1]) / 2
 }
 
+// Displays the output data
 func (d *Data) String() string {
 	var from DTime
 	var to DTime

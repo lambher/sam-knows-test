@@ -4,7 +4,7 @@
   <h1 align="center">SamKnows Backend Engineering Test</h1>
 </div>
 
-## Summary
+## A brief description of the project
 
 The scope of the test is to generate the expected output files (in the `outputs` folder) given the input files (in the `inputs` folder).
 
@@ -12,31 +12,55 @@ The application should:
 1. Display the min, max, median and average for a data set.
 2. Discover under-performing periods of download performance.
 
-If you do submit it without doing everything you'd like to do, then add a TODO file in root with the changes
-you'd like to make and document any assumptions made during the implementation.
+## Installation instructions
 
-## Data
-In the data provided, `dtime` represents the date of the measurement and `metricValue` represents 
-the measurement in bytes per second.
+Before running the test, please make sure you have Golang installed on your OS.
+https://golang.org/doc/install
 
-## What we're looking for
+## Example
 
-We would like you to write a small application in one of the following languages/frameworks:
-- PHP (Symfony 4+)
-- Java (Spring)
-- Go
+Let says you have an input file `inputs/1.json` that contains:
 
-The application should:
+```[
+  {
+    "metricValue": 12693166.98,
+    "dtime": "2018-01-29"
+  },
+  {
+    "metricValue": 12668239.57,
+    "dtime": "2018-01-30"
+  },
+  {
+    "metricValue": 12723772.1,
+    "dtime": "2018-01-31"
+  },
+...
+]
+```
 
-- Be well-structured.
-- Be covered by automated tests.
-- Include clear and concise commit messages.
-- Include relevant documentation and/or comments.
+Just run the following command : `go run main.go inputs/1.json`
 
+You should have this output :
 
-## When you're finished
+```
+SamKnows Metric Analyser v1.0.0
+===============================
 
-Either share your repo or send over your code in a compressed format.
+Period checked:
 
+    From: 2018-01-29
+    To:   2018-02-27
 
-Thank you and good luck!
+Statistics:
+
+    Unit: Megabits per second
+
+    Average: 102.7
+    Min: 101.25
+    Max: 104.08
+    Median: 102.93
+```
+
+## Run the tests
+
+To run the tests and show the percent of coverage statements please run : `go test ./... -cover`

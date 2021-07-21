@@ -3,12 +3,18 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/lambher/sam-knows-test/models"
 )
 
 func main() {
-	path := "inputs/2.json"
+	if len(os.Args) <= 1 {
+		fmt.Printf("Usage: %s [PATH_DATA]", os.Args[0])
+		return
+	}
+
+	path := os.Args[1]
 
 	data, err := models.LoadDataFromFile(path)
 	if err != nil {
