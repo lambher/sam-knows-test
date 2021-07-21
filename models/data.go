@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"sort"
 )
 
 type Data struct {
@@ -56,17 +55,35 @@ func (d *Data) Process() error {
 		values = append(values, metric.Value)
 	}
 	d.Average /= float64(len(d.Metrics))
-	d.Median = findMedian(values)
+	d.Median = findMedian(d.Metrics, len(d.Metrics)/2)
 
 	return nil
 }
 
-func findMedian(values []float64) float64 {
-	sort.Float64s(values)
-	if len(values)%2 == 1 {
-		return values[len(values)/2]
+func findMedian(metrics []Metric, k int) float64 {
+	if len(metrics) == 1 {
+		return metrics[0].Value
 	}
-	return (values[len(values)/2] + values[len(values)/2-1]) / 2
+
+	pivot := metrics[0].Value
+	setLeft := make([]Metric, 0)
+	setRight := make([]Metric, 0)
+
+	for _, metric := range metrics[1:] {
+		if metric.Value < pivot {
+			setLeft = append(setLeft, metric)
+		} else if metric.Value > pivot {
+			setRight = append(setRight, metric)
+		}
+	}
+
+	if len(setLeft) == k-1 {
+		return pivot
+	}
+	if len(setLeft) > k-1 {
+		return findMedian(setLeft, k)
+	}
+	return findMedian(setRight, k-len(setLeft)-1)
 }
 
 func (d *Data) String() string {
