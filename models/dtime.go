@@ -10,10 +10,16 @@ type DTime time.Time
 
 const DTLayout = "2006-01-02"
 
+func NewDTime(date string) DTime {
+	nt, err := time.Parse(DTLayout, date)
+	if err != nil {
+		return DTime{}
+	}
+	return DTime(nt)
+}
+
 func (dt *DTime) UnmarshalJSON(b []byte) (err error) {
-	s := strings.Trim(string(b), `"`)
-	nt, err := time.Parse(DTLayout, s)
-	*dt = DTime(nt)
+	*dt = NewDTime(strings.Trim(string(b), `"`))
 	return
 }
 

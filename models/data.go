@@ -94,6 +94,10 @@ func (d *Data) findUnderPerformingPeriods() {
 }
 
 func findMedian(values []float64) float64 {
+	if len(values) == 0 {
+		return 0
+	}
+
 	sort.Float64s(values)
 	if len(values)%2 == 1 {
 		return values[len(values)/2]
@@ -102,12 +106,12 @@ func findMedian(values []float64) float64 {
 }
 
 func (d *Data) String() string {
-	if len(d.Metrics) == 0 {
-		return "" +
-			"SamKnows Metric Analyser v1.0.0\n" +
-			"===============================\n" +
-			"\n" +
-			"No metrics processed"
+	var from DTime
+	var to DTime
+
+	if len(d.Metrics) > 0 {
+		from = d.Metrics[0].Date
+		to = d.Metrics[len(d.Metrics)-1].Date
 	}
 
 	str := fmt.Sprintf(""+
@@ -127,8 +131,8 @@ func (d *Data) String() string {
 		"\tMin: %.2f\n"+
 		"\tMax: %.2f\n"+
 		"\tMedian: %.2f\n",
-		d.Metrics[0].Date,
-		d.Metrics[len(d.Metrics)-1].Date,
+		from,
+		to,
 		bytesToMbits(d.Average),
 		bytesToMbits(d.Min),
 		bytesToMbits(d.Max),
@@ -146,6 +150,14 @@ func (d *Data) String() string {
 	}
 
 	return str
+}
+
+func (d Data) ResultToString() string {
+	return fmt.Sprintf(""+
+		"\tAverage: %.1f\n"+
+		"\tMin: %.2f\n"+
+		"\tMax: %.2f\n"+
+		"\tMedian: %.2f\n", d.Average, d.Min, d.Max, d.Median)
 }
 
 //1 Mbit = 125000 bytes
